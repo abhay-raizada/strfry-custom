@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 const axios = require("axios");
+const nostrTools = require("nostr-tools");
 
-const GRAPHQL_URL = "http://127.0.0.1:4002/graphql"; // Replace with your actual GraphQL endpoint
+const GRAPHQL_URL = "https://api.test.flashapp.me/graphql"; // Replace with your actual GraphQL endpoint
 
 const rl = require("readline").createInterface({
   input: process.stdin,
@@ -11,6 +12,7 @@ const rl = require("readline").createInterface({
 });
 
 const checkWhitelist = async (npub) => {
+  let encodedNpub = nostrTools.nip19.npubEncode(npub);
   const query = `
     query Query($input: IsFlashNpubInput!) {
       isFlashNpub(input: $input) {
@@ -20,7 +22,7 @@ const checkWhitelist = async (npub) => {
   `;
 
   const variables = {
-    input: { npub: npub },
+    input: { npub: encodedNpub },
   };
 
   console.error(
@@ -39,10 +41,10 @@ const checkWhitelist = async (npub) => {
         headers: { "Content-Type": "application/json" },
       }
     );
-    console.error("API response:", JSON.stringify(response.data)); // Log response to stderr
+    console.error("API response:", response.data); // Log response to stderr
     return response.data.data.isFlashNpub.isFlashNpub;
   } catch (error) {
-    console.error("Error fetching whitelist status:", error.message, error);
+    console.error("Error fetching whitelist status:", error.message);
     console.error("Request variables were:", JSON.stringify(variables));
     return false;
   }
