@@ -3,7 +3,7 @@
 const axios = require("axios");
 const nostrTools = require("nostr-tools");
 
-const GRAPHQL_URL = "https://api.test.flashapp.me/graphql"; // Replace with your actual GraphQL endpoint
+const GRAPHQL_URL = "https://api.flashapp.me/graphql"; // Replace with your actual GraphQL endpoint
 
 const rl = require("readline").createInterface({
   input: process.stdin,
@@ -66,6 +66,11 @@ rl.on("line", async (line) => {
   }
 
   const npub = req.event.tags.filter((t) => t[0] === "p")[0]?.[1];
+  console.error("npub is", npub, "Request event is", req.event);
+  if (!npub) {
+    console.error("No referenced npub");
+    return;
+  }
 
   // Check if the pubkey is on the whitelist via GraphQL query
   const isWhitelisted = await checkWhitelist(npub);
