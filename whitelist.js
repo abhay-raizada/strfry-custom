@@ -65,7 +65,7 @@ rl.on("line", async (line) => {
     return;
   }
 
-  const npub = req.event.pubkey;
+  const npub = req.event.tags.filter((t) => t[0] === "p")[0]?.[1];
 
   // Check if the pubkey is on the whitelist via GraphQL query
   const isWhitelisted = await checkWhitelist(npub);
